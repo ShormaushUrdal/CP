@@ -1,0 +1,57 @@
+<snippet>
+	<content><![CDATA[
+vector<ll> g[N];
+vector<vector<ll>> sccs;
+map<ll,ll> mp; //which scc the node condenses to
+int ct;
+
+void dfs(int node, vector<bool> &vis, vector<ll> &ord, 
+         vector<vector<ll>> &adj) {
+    vis[node] = true;
+    for(auto x: adj[node]) {
+        if(!vis[x]) 
+            dfs(x, vis, ord, adj);
+    }
+    ord.push_back(node);
+}
+
+void scc(int n) {
+    //designed for g[N] global array style graph
+    vector<vector<ll>> adj(n + 1);
+    vector<vector<ll>> radj(n + 1);
+    for(int i = 1; i <= n; i++) {
+        for(auto x: g[i]) {
+            adj[x].push_back(i);
+            radj[i].push_back(x);
+        }
+    }
+    vector<bool> vis(n + 1, false);
+    vector<ll> ord;
+    for(int i = 1; i <= n; i++) {
+        if(!vis[i]) {
+            dfs(i, vis, ord, adj);
+        }
+    }
+    reverse(ord.begin(), ord.end());
+    for(int i = 1; i <= n; i++) 
+        vis[i] = false;
+    vector<ll> nord;
+    ct = 1;
+    for(auto x: ord) {
+        if(!vis[x]) {
+            dfs(x, vis, nord, radj);
+            sccs.push_back(nord);
+            for(auto cur : nord) 
+                mp[cur] = ct;
+            ct++;
+            //can modify this based on needs
+            nord.clear();
+        }
+    }
+}
+
+]]></content>
+	<tabTrigger>scc</tabTrigger>
+    <scope>source.c++</scope>
+    <description>SCC</description>
+</snippet>
