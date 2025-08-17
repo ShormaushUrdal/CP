@@ -1,0 +1,88 @@
+<snippet>
+	<content><![CDATA[
+class BinaryLifting {
+private:
+    ll n;               
+    ll log_n;          
+    vector<vector<ll>> up;  
+    vector<ll> depth;   
+
+public:
+    
+    BinaryLifting(ll n, ll root = 1) {
+        this->n = n;
+        log_n = 0;
+        while ((1LL << log_n) <= n) log_n++;
+       
+        up = vector<vector<ll>>(n + 1, vector<ll>(log_n + 1, -1));
+        depth = vector<ll>(n + 1, 0);
+        
+        dfs(root, -1);
+        for (ll j = 1; j <= log_n; j++) {
+            for (ll i = 1; i <= n; i++) {
+                if (up[i][j-1] != -1) 
+                    up[i][j] = up[up[i][j - 1]][j - 1];
+            }
+        }
+    }
+
+    void dfs(ll node, ll parent) {
+        up[node][0] = parent;        
+        for (ll child : g[node]) {
+            if (child != parent) {
+                depth[child] = depth[node] + 1;
+                dfs(child, node);
+            }
+        }
+    }
+    
+    ll kthAncestor(ll node, ll k) {
+        if (k > depth[node]) return -1;
+        
+        for (ll j = log_n; j >= 0; j--) {
+            if (k & (1LL << j)) {
+                node = up[node][j];
+                if (node == -1) return -1;
+            }
+        }
+        
+        return node;
+    }
+    
+    ll lca(ll u, ll v) {
+        if (depth[u] < depth[v]) swap(u, v);
+        ll diff = depth[u] - depth[v];
+        for (ll j = log_n; j >= 0; j--) {
+            if (diff & (1LL << j)) {
+                u = up[u][j];
+            }
+        }
+        
+        if (u == v) return u;
+        
+        for (ll j = log_n; j >= 0; j--) {
+            if (up[u][j] != up[v][j]) {
+                u = up[u][j];
+                v = up[v][j];
+            }
+        }
+        
+        return up[u][0];
+    }
+    
+    ll jumpsToLca(ll from, ll to) {
+        ll lca_node = lca(from, to);
+        return depth[from] - depth[lca_node];
+    }
+    
+    ll distance(ll u, ll v) {
+        ll lca_node = lca(u, v);
+        return depth[u] + depth[v] - 2 * depth[lca_node];
+    }
+};
+
+]]></content>
+	<tabTrigger>binary lifting</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Binary lifting</description>
+</snippet>

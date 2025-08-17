@@ -1,0 +1,37 @@
+<snippet>
+	<content><![CDATA[
+class DSU {
+    public:
+        vector<int> parent , size;
+        DSU(int n) {
+            parent = vector <int>(n + 1);
+            size = vector<int>(n + 1, 1);
+            for(int i = 1; i <= n; i++)
+                parent[i] = i;
+        }
+        
+        int par(int x) {
+            if (parent[x] == x) return x;
+            return parent[x] = par(parent[x]);
+        }
+
+        void join(int x, int y) {
+            x = par(x);
+            y = par(y);
+            if (size[x] > size[y])
+                swap(x, y);
+            if (x == y) return;
+            parent[x] = y;
+            size[y] += size[x];                
+        }
+
+        int getSize(int x) {
+            return size[x] = size[par(x)];
+        }
+};
+
+]]></content>
+ <tabTrigger>DSU</tabTrigger>
+    <scope>source.c++</scope>
+    <description>DSU Snippet</description>
+</snippet>

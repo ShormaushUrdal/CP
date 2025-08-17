@@ -1,0 +1,105 @@
+<snippet>
+	<content><![CDATA[
+template <unsigned int mod2 = M>
+struct mint {
+    unsigned int x;
+ 
+    mint() : x(0) {}
+ 
+    mint(long long _x) {
+        _x %= mod2;
+        if (_x < 0) _x += mod2;
+        x = _x;
+    }
+ 
+    mint& operator+=(const mint& a) {
+        x += a.x;
+        if (x >= mod2) x -= mod2;
+        return *this;
+    }
+ 
+    mint& operator-=(const mint& a) {
+        x += mod2 - a.x;
+        if (x >= mod2) x -= mod2;
+        return *this;
+    }
+ 
+    mint& operator*=(const mint& a) {
+        x = (long long)x * a.x % mod2;
+        return *this;
+    }
+ 
+    mint pow(long long pw) const {
+        mint res = 1;
+        mint cur = *this;
+        while (pw) {
+            if (pw & 1) res *= cur;
+            cur *= cur;
+            pw >>= 1;
+        }
+        return res;
+    }
+ 
+    mint inv() const {
+        assert(x != 0);
+        unsigned int t = x;
+        unsigned int res = 1;
+        while (t != 1) {
+            unsigned int Mint = mod2 / t;
+            res = (long long)res * (mod2 - Mint) % mod2;
+            t = mod2 - t * Mint;
+        }
+        return res;
+    }
+ 
+    mint& operator/=(const mint& a) {
+        return *this *= a.inv();
+    }
+ 
+    mint operator+(const mint& a) const {
+        return mint(*this) += a;
+    }
+ 
+    mint operator-(const mint& a) const {
+        return mint(*this) -= a;
+    }
+ 
+    mint operator*(const mint& a) const {
+        return mint(*this) *= a;
+    }
+ 
+    mint operator/(const mint& a) const {
+        return mint(*this) /= a;
+    }
+ 
+    bool operator==(const mint& a) const {
+        return x == a.x;
+    }
+ 
+    bool operator!=(const mint& a) const {
+        return x != a.x;
+    }
+ 
+    bool operator<(const mint& a) const {
+        return x < a.x;
+    }
+ 
+    friend ostream& operator<<(std::ostream& os, mint const& a) {
+        return os << a.x;
+    }
+ 
+    friend istream& operator>>(istream& is, mint& a) {
+        long long _x;
+        is >> _x;
+        a = mint(_x);
+        return is;
+    }
+};
+ 
+using Z = mint<>;
+
+]]></content>
+ <tabTrigger>modint</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Modint</description>
+</snippet>

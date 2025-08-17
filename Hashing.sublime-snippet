@@ -1,0 +1,71 @@
+<snippet>
+	<content><![CDATA[
+
+ll m[2];
+ll po[N][2];
+ll inv[N][2];
+ll base;
+
+ll power(ll x, ll y, ll p) {
+    ll res = 1;
+    x = x % p;
+    while (y > 0) {
+        if (y & 1)
+            res = (res * x) % p;
+        y = y >> 1;
+        x = (x * x) % p;
+    }
+    return res;
+}
+
+ll modInverse(ll n, ll p) {
+    return power(n, p - 2, p);
+}
+
+void Init() {
+    m[0] = 479001599;
+    m[1] = 2147483647;
+    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+    mt19937 generator(seed);
+    uniform_int_distribution<ll> distribution(30, 1e9);
+    base = distribution(generator);
+
+    for (int j = 0; j < 2; j++) {
+        ll mul = modInverse(base, m[j]);
+        for (int i = 0; i < N; i++) {
+            if (i == 0) {
+                po[i][j] = 1;
+                inv[i][j] = 1;
+                continue;
+            }
+            po[i][j] = po[i - 1][j] * base % m[j];
+            inv[i][j] = inv[i - 1][j] * mul % m[j];
+        }
+    }
+}
+
+struct StringHash {
+    vector<vector<ll>> pr; 
+
+    StringHash(string& s) {
+        int n = s.size();
+        pr.resize(n + 1, vector<ll>(2, 0)); 
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 2; j++) {
+                pr[i + 1][j] = (pr[i][j] + (s[i] - 'a' + 1) * po[i][j]) % m[j];
+            }
+        }
+    }
+
+    ll calc(int l, int r, int id) {
+        ll cur = (pr[r + 1][id] - pr[l][id] + m[id]) % m[id];
+        cur = (cur * inv[l][id]) % m[id];
+        return cur;
+    }
+};
+]]></content>
+	<tabTrigger>hashing</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Hash Snippet</description>
+</snippet>

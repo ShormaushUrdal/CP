@@ -1,0 +1,35 @@
+<snippet>
+	<content><![CDATA[
+void remove(ll idx);  
+void add(ll idx);    
+ll get_answer();      
+ll block_size;
+
+struct Query {
+    ll l, r, idx;
+    bool operator<(const Query& other) const {
+        return make_pair(l / block_size, r) < 
+               make_pair(other.l / block_size, other.r);
+    }
+};
+
+vector<ll> mo(vector<Query> qs) {
+    vector<ll> ans(qs.size());
+    sort(qs.begin(), qs.end());
+    
+    ll l = 0, r = -1;
+    for (auto q : qs) {
+        while (l > q.l) add(--l);
+        while (r < q.r) add(++r);
+        while (l < q.l) remove(l++);
+        while (r > q.r) remove(r--);
+        ans[q.idx] = get_answer();
+    }
+    return ans;
+}
+
+]]></content>
+	<tabTrigger>mos algo</tabTrigger>
+    <scope>source.c++</scope>
+    <description>MO's algorithm</description>
+</snippet>
