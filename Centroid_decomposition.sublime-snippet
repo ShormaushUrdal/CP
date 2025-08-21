@@ -1,0 +1,78 @@
+<snippet>
+	<content><![CDATA[
+vector<ll> g[N];
+
+class Centroid {
+public:
+    vector<bool> processed;
+    vector<vector<ll>> adj; //original tree
+    vector<vector<ll>> cent; //centroid tree
+    vector<ll> par; //parent in centroid tree
+    vector<ll> sz; //subtree size in original tree
+    ll n;
+
+    Centroid(ll n1) {
+        n = n1;
+        adj.resize(n + 1);        
+        cent.resize(n + 1);
+        par.resize(n + 1);        
+        sz.resize(n + 1);         
+        processed.resize(n + 1, false);
+        for(int i = 1; i <= n; i++) {
+            par[i] = -1;
+            for(auto x : g[i]) {
+                adj[i].push_back(x);
+            }
+        }
+    }
+    
+    ll find_size(ll u, ll p = 0) {
+        sz[u] = 1;
+        for(ll v : adj[u]) {
+            if(v != p && !processed[v]) {
+                sz[u] += find_size(v, u);
+            }
+        }
+        return sz[u];
+    }
+    
+    ll find_centroid(ll desired, ll u, ll p = 0) {
+        for(ll v : adj[u]) {
+            if(v != p && !processed[v] 
+                && sz[v] >= desired) {
+                return find_centroid(desired, v, u);
+            }
+        }
+        return u;
+    }
+    
+    void get_cnt() {
+    }
+    
+    void decompose(ll u = 1, ll parent = -1) {
+        ll centroid = find_centroid(find_size(u) / 2, u);
+        processed[centroid] = true;   
+        par[centroid] = parent;
+        if(parent != -1) {
+            cent[parent].push_back(centroid);
+            cent[centroid].push_back(parent);
+        }     
+        for(ll v : adj[centroid]) {
+            if(!processed[v]) {
+                get_cnt(); 
+                //in each decomposition making the 
+                //current node v as root
+            }
+        }        
+        for(ll v : adj[centroid]) {
+            if(!processed[v]) {
+                decompose(v, centroid);
+            }
+        }
+    }
+};
+]]></content>
+	<tabTrigger>centroid decomposition</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Centroid Decomposition</description>
+</snippet>

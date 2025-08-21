@@ -16,7 +16,6 @@ void dfs(int node, vector<bool> &vis, vector<ll> &ord,
 }
 
 void scc(int n) {
-    //designed for g[N] global array style graph
     vector<vector<ll>> adj(n + 1);
     vector<vector<ll>> radj(n + 1);
     for(int i = 1; i <= n; i++) {
